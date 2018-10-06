@@ -29,6 +29,7 @@
         'data/odoo_licence.xml',
     ],
     'demo': [
+        'demo/github_serie.xml',
         'demo/github_organization.xml',
     ],
     'installable': True,
