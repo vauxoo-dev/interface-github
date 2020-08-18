@@ -1,5 +1,5 @@
 # Copyright (C) 2016-Today: Odoo Community Association (OCA)
-# @author: Sylvain LE GAL (https://twitter.com/legalsylvain)
+# @author: Sylvain LE GAL  (https://twitter.com/legalsylvain)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import logging
@@ -149,8 +149,10 @@ class GithubRepository(models.Model):
                             branch.local_path))
 
                 command = (
-                    "git clone %s%s/%s.git -b %s %s") % (
-                        _GITHUB_URL,
+                    "git clone %s//%s%s%s/%s.git -b %s %s") % (
+                        _GITHUB_URL.split('//')[0],
+                        self.get_github_login(),
+                        _GITHUB_URL.split('//')[1],
                         branch.repository_id.organization_id.github_login,
                         branch.repository_id.name,
                         branch.name,
@@ -194,6 +196,18 @@ class GithubRepository(models.Model):
                     else:
                         branch._download_code()
         return True
+
+    def get_github_login(self):
+        """Get credentials for private repos."""
+        login = ''
+        if tools.config.get('github_token'):
+            login = "x-access-token:%s@" % (tools.config.get('github_token'))
+        elif tools.config.get('github_login') and tools.config.get('github_password'):
+            login = "%s:%s@" % (
+                tools.config.get('github_login'),
+                tools.config.get('github_password')
+            )
+        return login
 
     def _get_analyzable_files(self, existing_folder):
         res = []
